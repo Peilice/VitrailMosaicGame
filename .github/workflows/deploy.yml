@@ -1,0 +1,54 @@
+name: 部署到 GitHub Pages
+
+# 只有 push 到 main 才會建置並發佈（見 docs/MVP-spec.md「部署」）
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一時間只保留一個部署，新的 push 會取代還沒開始的舊部署
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # 與本機建立 pnpm-lock.yaml 時用的版本一致
+      - run: npm install -g pnpm@12.18.0
+
+      - run: pnpm install --frozen-lockfile
+
+      # 測試沒過就不發佈
+      - run: pnpm test
+
+      # 會先跑 tsc --noEmit 再建置；Vite 的 base 是 './'，放在子路徑下也能正常載入
+      - run: pnpm build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
