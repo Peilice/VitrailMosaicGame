@@ -52,7 +52,7 @@ export function bindGestures(
         : e.deltaMode === 2
           ? element.clientHeight
           : 1;
-    controller.wheel(local(e), e.deltaY * unit, e.ctrlKey);
+    controller.wheel(local(e), e.deltaY * unit, e.ctrlKey, e.deltaX * unit);
   };
 
   const onContextMenu = (e: Event): void => e.preventDefault();
