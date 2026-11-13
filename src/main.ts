@@ -1,5 +1,6 @@
 import { Application } from 'pixi.js';
 import { SoundPlayer } from './audio/sound-player';
+import { SettingsStore } from './core/settings';
 import { Game } from './game';
 import { bindGestures } from './input/bind';
 
@@ -14,7 +15,7 @@ function showError(host: HTMLElement, message: string): void {
   host.appendChild(el);
 }
 
-function setupMuteButton(sounds: SoundPlayer): void {
+function setupMuteButton(sounds: SoundPlayer, settings: SettingsStore): void {
   const button = document.getElementById('mute');
   if (!(button instanceof HTMLButtonElement)) return;
   const on = button.querySelector<SVGElement>('.icon-on');
@@ -29,6 +30,7 @@ function setupMuteButton(sounds: SoundPlayer): void {
   button.addEventListener('click', () => {
     void sounds.unlock();
     sounds.setMuted(!sounds.muted);
+    settings.save({ version: 1, muted: sounds.muted });
     render();
   });
   render();
@@ -76,6 +78,8 @@ async function bootstrap(): Promise<void> {
   host.appendChild(app.canvas);
 
   const sounds = new SoundPlayer();
+  const settings = new SettingsStore();
+  sounds.setMuted(settings.load().muted); // 還原上次的靜音設定
   void sounds.prefetch();
 
   let game: Game;
@@ -105,7 +109,7 @@ async function bootstrap(): Promise<void> {
     if (e.pointerType === 'mouse') void sounds.unlock();
   });
   app.canvas.addEventListener('pointerup', () => void sounds.unlock());
-  setupMuteButton(sounds);
+  setupMuteButton(sounds, settings);
   setupReplayButton(game);
   app.ticker.add((ticker) => game.update(ticker.deltaMS / 1000));
 
