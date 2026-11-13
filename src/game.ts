@@ -14,6 +14,7 @@ import { polygonBounds } from './core/geometry';
 import { computeLayout, regionAt } from './core/layout';
 import type { Layout } from './core/layout';
 import { loadLevel } from './core/level';
+import { FrameMonitor } from './core/perf';
 import { SaveStore, createSave, markSet } from './core/save';
 import type { SaveData } from './core/save';
 import { magnetPull } from './core/snap';
@@ -38,6 +39,16 @@ const SETTLE_SECONDS = 0.12;
 const DRAG_SCALE_RATE = 24;
 /** 從托盤拉出的玻璃滑到手指正下方的速度（每秒） */
 const DRAG_CENTER_RATE = 16;
+
+export interface GameOptions {
+  /**
+   * 全域 bloom：'auto' 依幀率偵測決定（預設，效能足夠才開），
+   * true / false 強制開關（除錯、截圖用）。
+   */
+  bloom?: 'auto' | boolean;
+  /** 使用者偏好減少動態：完成時不播動畫，直接顯示最終畫面 */
+  reducedMotion?: boolean;
+}
 
 interface DragState {
   id: string;
@@ -79,6 +90,14 @@ export class Game {
   private camera: Camera;
   private scroll = 0;
   private drag: DragState | null = null;
+  private readonly bloomMode: 'auto' | boolean;
+  private readonly reducedMotion: boolean;
+  private readonly monitor = new FrameMonitor();
+  private completing = false;
+  private isFinished = false;
+
+  /** 完成動畫播完（或讀取到已完成的存檔）時呼叫，之後可以顯示「重玩」 */
+  onFinished: (() => void) | null = null;
 
   static async create(
     app: Application,
@@ -86,9 +105,10 @@ export class Game {
     levelId: string,
     sounds: SoundPlayer,
     store: SaveStore = new SaveStore(),
+    options: GameOptions = {},
   ): Promise<Game> {
     const level = await loadLevel(levelUrl);
-    return new Game(app, level, levelId, sounds, store);
+    return new Game(app, level, levelId, sounds, store, options);
   }
 
   constructor(
@@ -97,8 +117,11 @@ export class Game {
     levelId: string,
     sounds: SoundPlayer,
     store: SaveStore,
+    options: GameOptions = {},
   ) {
     this.app = app;
+    this.bloomMode = options.bloom ?? 'auto';
+    this.reducedMotion = options.reducedMotion ?? false;
     this.level = level;
     this.levelId = levelId;
     this.sounds = sounds;
@@ -122,6 +145,9 @@ export class Game {
     this.trayLayout = this.buildTrayLayout();
     this.scene.setCamera(this.camera);
     this.scene.setTrayRect(this.layout.tray);
+    this.scene.setScreen(app.screen);
+    if (typeof this.bloomMode === 'boolean')
+      this.scene.setBloom(this.bloomMode);
 
     // 還原存檔：已鑲嵌的玻璃直接放在格子裡並發光，其餘留在托盤
     for (const id of this.board.setIds()) {
@@ -133,6 +159,11 @@ export class Game {
       view.setLit(1, true);
     }
     this.relayoutTray();
+    if (this.board.isComplete()) {
+      // 已經完成過的存檔：直接顯示完成後的畫面，不重播動畫
+      this.isFinished = true;
+      this.scene.showCompleted();
+    }
 
     app.renderer.on('resize', () => this.resize());
     this.controller = new GestureController(
@@ -144,6 +175,11 @@ export class Game {
   /** 每幀呼叫，`dt` 是秒 */
   update(dt: number): void {
     this.scene.update(dt);
+    if (this.bloomMode === 'auto') {
+      // 幀率偵測：效能足夠才開 bloom，變慢了就關掉
+      const verdict = this.monitor.push(dt * 1000);
+      if (verdict) this.scene.setBloom(verdict === 'enable');
+    }
     if (this.drag) {
       const d = this.drag;
       d.scale = smoothTowards(d.scale, this.camera.zoom, dt, DRAG_SCALE_RATE);
@@ -157,6 +193,37 @@ export class Game {
 
   get complete(): boolean {
     return this.board.isComplete();
+  }
+
+  /** 已完成，且完成動畫已經播完（或根本不需要播） */
+  get finished(): boolean {
+    return this.isFinished;
+  }
+
+  get bloomEnabled(): boolean {
+    return this.scene.bloomEnabled;
+  }
+
+  /** 重玩：清除這個關卡的存檔並重新載入頁面（會得到新的托盤順序） */
+  restart(): void {
+    this.store.clear(this.levelId);
+    window.location.reload();
+  }
+
+  private beginCompletion(): void {
+    if (this.completing || this.isFinished) return;
+    const done = (): void => {
+      this.completing = false;
+      this.isFinished = true;
+      this.onFinished?.();
+    };
+    if (this.reducedMotion) {
+      this.scene.showCompleted();
+      done();
+      return;
+    }
+    this.completing = true;
+    this.scene.playCompletion(done);
   }
 
   // ---------------------------------------------------------------- 版面與相機
@@ -182,6 +249,7 @@ export class Game {
     this.camera = resizeCamera(this.camera, oldViewport, this.cameraSetup());
     this.scene.setCamera(this.camera);
     this.scene.setTrayRect(this.layout.tray);
+    this.scene.setScreen(this.app.screen);
     this.relayoutTray();
   }
 
@@ -368,6 +436,10 @@ export class Game {
         id,
         { x: result.position.x, y: result.position.y, scale: 1 },
         SETTLE_SECONDS,
+        // 最後一片卡進去之後，才開始完成動畫
+        () => {
+          if (this.board.isComplete()) this.beginCompletion();
+        },
       );
       this.sounds.play('set');
       this.save = markSet(this.save, id, this.pieceIds);

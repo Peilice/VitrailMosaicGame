@@ -6,7 +6,7 @@ import { hashSeed } from '../core/hash';
 import { pieceSize } from '../core/snap';
 import { triangulate } from '../core/triangulate';
 import type { PieceData } from '../core/types';
-import { createGlassShader, setGlassLit } from './glass-shader';
+import { createGlassShader, setGlassBoost, setGlassLit } from './glass-shader';
 
 export interface PieceViewOptions {
   /** 紋理座標縮放：世界座標 × texScale = shader 用的 uv，所有玻璃片共用才能讓紋理疏密一致 */
@@ -32,6 +32,7 @@ export class PieceView extends Container {
   private readonly glow: Graphics;
   private lit = 0;
   private litTarget = 0;
+  private boost = 0;
 
   constructor(piece: PieceData, options: PieceViewOptions) {
     super();
@@ -97,6 +98,14 @@ export class PieceView extends Container {
     }
   }
 
+  /** 完成動畫的額外亮度 [0, 1]：玻璃整體閃亮，內側柔光也跟著變強 */
+  setBoost(boost: number): void {
+    if (boost === this.boost) return;
+    this.boost = boost;
+    setGlassBoost(this.shader, boost);
+    this.applyLit();
+  }
+
   get litValue(): number {
     return this.lit;
   }
@@ -111,7 +120,7 @@ export class PieceView extends Container {
 
   private applyLit(): void {
     setGlassLit(this.shader, this.lit);
-    this.glow.alpha = this.lit;
+    this.glow.alpha = Math.min(1, this.lit * (1 + this.boost * 1.2));
     this.glow.visible = this.lit > 0.01;
   }
 }

@@ -34,6 +34,26 @@ function setupMuteButton(sounds: SoundPlayer): void {
   render();
 }
 
+/** `?bloom=1` 強制開、`?bloom=0` 強制關，沒有指定就依幀率自動決定 */
+function bloomOption(): 'auto' | boolean {
+  const v = new URLSearchParams(location.search).get('bloom');
+  return v === '1' ? true : v === '0' ? false : 'auto';
+}
+
+function setupReplayButton(game: Game): void {
+  const button = document.getElementById('replay');
+  const status = document.getElementById('status');
+  if (!(button instanceof HTMLButtonElement)) return;
+  const show = (): void => {
+    button.hidden = false;
+    if (status) status.textContent = '完成了！';
+    button.focus({ preventScroll: true });
+  };
+  button.addEventListener('click', () => game.restart());
+  if (game.finished) show();
+  game.onFinished = show;
+}
+
 async function bootstrap(): Promise<void> {
   const host = document.getElementById('app');
   if (!host) throw new Error('找不到 #app 容器');
@@ -60,7 +80,18 @@ async function bootstrap(): Promise<void> {
 
   let game: Game;
   try {
-    game = await Game.create(app, `levels/${levelId}.json`, levelId, sounds);
+    game = await Game.create(
+      app,
+      `levels/${levelId}.json`,
+      levelId,
+      sounds,
+      undefined,
+      {
+        bloom: bloomOption(),
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)')
+          .matches,
+      },
+    );
   } catch (e) {
     console.error(e);
     showError(host, `無法載入關卡「${levelId}」。請重新整理頁面再試一次。`);
@@ -75,6 +106,7 @@ async function bootstrap(): Promise<void> {
   });
   app.canvas.addEventListener('pointerup', () => void sounds.unlock());
   setupMuteButton(sounds);
+  setupReplayButton(game);
   app.ticker.add((ticker) => game.update(ticker.deltaMS / 1000));
 
   if (import.meta.env.DEV) {

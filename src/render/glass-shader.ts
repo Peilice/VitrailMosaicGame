@@ -43,6 +43,7 @@ uniform float uKind;    // 0 水波紋、1 氣泡、2 冰裂紋
 uniform float uLit;     // 0 暗沉、1 背後有光
 uniform float uSeed;    // 每片玻璃的紋理種子 [0,1)
 uniform float uRadius;  // 玻璃片中心到最遠頂點的距離（uv 單位）
+uniform float uBoost;   // 完成動畫的額外亮度 [0,1]
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -126,6 +127,7 @@ void main() {
   vec3 col = mix(dimCol, litCol, uLit);
   col *= 1.0 + pat.x;
   col += vec3(pat.y) * mix(0.35, 1.0, uLit);
+  col = col * (1.0 + 0.28 * uBoost) + uBase * 0.1 * uBoost;
   col = clamp(col, 0.0, 1.0);
 
   finalColor = vec4(col, 1.0) * uColor * uWorldColorAlpha;
@@ -166,6 +168,7 @@ export function createGlassShader(options: GlassOptions): Shader {
         uLit: { value: 0, type: 'f32' },
         uSeed: { value: options.seed, type: 'f32' },
         uRadius: { value: options.radius, type: 'f32' },
+        uBoost: { value: 0, type: 'f32' },
       },
     },
   });
@@ -173,4 +176,9 @@ export function createGlassShader(options: GlassOptions): Shader {
 
 export function setGlassLit(shader: Shader, lit: number): void {
   shader.resources.glass.uniforms.uLit = lit;
+}
+
+/** 完成動畫的額外亮度（0 = 一般，1 = 閃亮最大） */
+export function setGlassBoost(shader: Shader, boost: number): void {
+  shader.resources.glass.uniforms.uBoost = boost;
 }

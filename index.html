@@ -23,6 +23,39 @@
         position: fixed;
         inset: 0;
       }
+      #replay {
+        position: fixed;
+        top: 68px;
+        left: 12px;
+        z-index: 10;
+        padding: 10px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 22px;
+        background: rgba(20, 20, 28, 0.78);
+        color: #eceef8;
+        font:
+          16px/1.2 system-ui,
+          sans-serif;
+        cursor: pointer;
+      }
+      #replay[hidden] {
+        display: none;
+      }
+      #replay:hover {
+        background: rgba(40, 40, 56, 0.9);
+      }
+      #replay:focus-visible {
+        outline: 2px solid #8fb4ff;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
       #mute {
         position: fixed;
         top: 12px;
@@ -72,6 +105,8 @@
         <path d="m16 9 5 6m0-6-5 6" />
       </svg>
     </button>
+    <button id="replay" type="button" hidden>重玩</button>
+    <p id="status" class="sr-only" role="status"></p>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
