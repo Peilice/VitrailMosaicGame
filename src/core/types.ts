@@ -3,6 +3,17 @@ export interface Point {
   y: number;
 }
 
+export interface Size {
+  width: number;
+  height: number;
+}
+
+/** 螢幕座標中的矩形（左上角加尺寸） */
+export interface Rect extends Size {
+  x: number;
+  y: number;
+}
+
 export const GLASS_TEXTURES = ['ripple', 'bubble', 'crackle'] as const;
 export type GlassTexture = (typeof GLASS_TEXTURES)[number];
 
