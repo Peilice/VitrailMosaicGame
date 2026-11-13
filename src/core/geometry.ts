@@ -99,3 +99,23 @@ export function isSimplePolygon(polygon: readonly Point[]): boolean {
   }
   return true;
 }
+
+/** 多邊形的外框（bounding box） */
+export function polygonBounds(polygon: readonly Point[]): {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+} {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const p of polygon) {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
+  }
+  return { minX, minY, maxX, maxY };
+}

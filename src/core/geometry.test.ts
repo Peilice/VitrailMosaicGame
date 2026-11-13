@@ -4,6 +4,7 @@ import {
   pointInPolygon,
   polygonArea,
   polygonCentroid,
+  polygonBounds,
 } from './geometry';
 
 describe('pointInPolygon', () => {
@@ -83,5 +84,17 @@ describe('isSimplePolygon', () => {
         { x: 0, y: 10 },
       ]),
     ).toBe(false);
+  });
+});
+
+describe('polygonBounds', () => {
+  it('回傳外框', () => {
+    expect(
+      polygonBounds([
+        { x: 3, y: 9 },
+        { x: -2, y: 4 },
+        { x: 7, y: 1 },
+      ]),
+    ).toEqual({ minX: -2, minY: 1, maxX: 7, maxY: 9 });
   });
 });

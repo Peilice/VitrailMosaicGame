@@ -73,6 +73,8 @@ export class SoundPlayer {
   private readonly minInterval: number;
 
   private ctx: AudioContextLike | null = null;
+  /** 已建立但可能還沒解碼完成的 context，用來在之後的使用者操作中重試 resume */
+  private created: AudioContextLike | null = null;
   private master: { readonly gain: { value: number } } | null = null;
   private prefetching: Promise<void> | null = null;
   private unlocking: Promise<void> | null = null;
@@ -123,6 +125,11 @@ export class SoundPlayer {
    * 重複呼叫是安全的。
    */
   unlock(): Promise<void> {
+    // Chrome 對觸控只在 pointerup（touchend）才算使用者操作，pointerdown 不算，
+    // 所以第一次嘗試 resume 可能被拒絕。之後每次呼叫（例如在 pointerup）都再試一次。
+    if (this.created?.state === 'suspended') {
+      void this.created.resume().catch(() => undefined);
+    }
     this.unlocking ??= this.doUnlock();
     return this.unlocking;
   }
@@ -134,6 +141,7 @@ export class SoundPlayer {
     } catch {
       return; // 瀏覽器不支援 Web Audio：維持無聲，遊戲照常進行
     }
+    this.created = ctx;
     const master = ctx.createGain();
     master.gain.value = this.isMuted ? 0 : 1;
     master.connect(ctx.destination);

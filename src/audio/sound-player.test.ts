@@ -146,6 +146,26 @@ describe('unlock', () => {
     expect(ctx.resumeCalls).toBe(1);
   });
 
+  it('第一次 resume 沒有真的啟動（context 仍是 suspended）時，再次呼叫會重試', async () => {
+    const ctx = new FakeContext();
+    ctx.resume = function (this: FakeContext) {
+      this.resumeCalls++;
+      // 前兩次模擬被瀏覽器拒絕（沒有使用者操作），第三次才成功
+      if (this.resumeCalls >= 3) this.state = 'running';
+      return Promise.resolve();
+    };
+    const { player } = make({ ctx });
+    await player.unlock();
+    expect(ctx.resumeCalls).toBe(1);
+    expect(ctx.state).toBe('suspended');
+    await player.unlock();
+    expect(ctx.resumeCalls).toBe(2);
+    await player.unlock();
+    expect(ctx.resumeCalls).toBe(3);
+    await player.unlock(); // 已啟動，不再重試
+    expect(ctx.resumeCalls).toBe(3);
+  });
+
   it('沒有音效檔（下載失敗）時，三個音效都改用合成音效', async () => {
     const { player, ctx } = make({ fetchFn: failingFetch });
     await player.unlock();

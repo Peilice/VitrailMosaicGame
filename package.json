@@ -14,10 +14,12 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "earcut": "^3.2.4",
     "pixi.js": "^8.23.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/earcut": "^3.2.4",
     "@types/node": "^26.6.6",
     "@xmldom/xmldom": "^0.9.12",
     "eslint": "^10.14.0",

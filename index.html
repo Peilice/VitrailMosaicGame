@@ -15,15 +15,63 @@
         overflow: hidden;
         background: #0b0b10;
         touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
       }
       #app {
         position: fixed;
         inset: 0;
       }
+      #mute {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 10;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 50%;
+        background: rgba(20, 20, 28, 0.72);
+        color: #cfd2e0;
+        cursor: pointer;
+      }
+      #mute:hover {
+        background: rgba(40, 40, 56, 0.85);
+      }
+      #mute:focus-visible {
+        outline: 2px solid #8fb4ff;
+        outline-offset: 2px;
+      }
+      #mute svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #mute [hidden] {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
+    <button id="mute" type="button" aria-label="靜音" aria-pressed="false">
+      <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 5 6 9H3v6h3l5 4z" />
+        <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+      </svg>
+      <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+        <path d="M11 5 6 9H3v6h3l5 4z" />
+        <path d="m16 9 5 6m0-6-5 6" />
+      </svg>
+    </button>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  開發用的佔位關卡（不是正式關卡）。
+  7 片玻璃剛好鋪滿 400×300，用來驗證渲染：
+  - 含曲線（e1、f 共用的弧形邊）
+  - 含凹多邊形（c）
+  - 含很尖的銳角（d、e1 在中央交會處）
+  - 三種紋理各出現至少一次
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <path id="a" fill="#e8a33d" data-texture="ripple" d="M0 0 L180 0 L0 140 Z" />
+  <path id="b" fill="#2c5fa8" data-texture="bubble" d="M180 0 L400 0 L400 90 L260 90 Z" />
+  <path id="c" fill="#b8283a" data-texture="crackle" d="M0 140 L180 0 L260 90 L170 100 L120 230 Z" />
+  <path id="d" fill="#2a8a5a" data-texture="ripple" d="M260 90 L400 90 L400 210 L170 100 Z" />
+  <path id="e1" fill="#7a4ba0" data-texture="bubble" d="M120 230 L170 100 L220 300 C200 260 150 265 120 230 Z" />
+  <path id="e2" fill="#2aa3a3" data-texture="crackle" d="M170 100 L400 210 L400 300 L220 300 Z" />
+  <path id="f" fill="#f0d04a" data-texture="ripple" d="M0 140 L120 230 C150 265 200 260 220 300 L0 300 Z" />
+</svg>
