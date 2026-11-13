@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint .",
+    "levels": "node tools/svg-to-level.ts",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -17,6 +18,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "@xmldom/xmldom": "^0.9.12",
     "eslint": "^10.14.0",
     "prettier": "^3.10.1",
     "typescript": "~5.9.3",

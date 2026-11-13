@@ -3,7 +3,8 @@ export interface Point {
   y: number;
 }
 
-export type GlassTexture = 'ripple' | 'bubble' | 'crackle';
+export const GLASS_TEXTURES = ['ripple', 'bubble', 'crackle'] as const;
+export type GlassTexture = (typeof GLASS_TEXTURES)[number];
 
 /** 關卡 JSON 中的一片玻璃（格子形狀等於玻璃形狀） */
 export interface PieceData {
