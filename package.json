@@ -11,6 +11,7 @@
     "test": "vitest run",
     "lint": "eslint .",
     "levels": "node tools/svg-to-level.ts",
+    "levels:stress": "node tools/gen-stress-level.ts",
     "format": "prettier --write ."
   },
   "dependencies": {
