@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <path id="head" d="M400 168 L412 200 L388 200 Z" fill="#c9c3b0" data-texture="bubble"/>
+  <path id="body" d="M412 200 L418 300 L412 400 L400 445 L388 400 L382 300 L388 200 Z" fill="#14172b" data-texture="ripple"/>
+  <path id="wing-inner-l" d="M388 200 L310 120 L215 165 L300 235 L382 300 Z" fill="#b8283a" data-texture="ripple"/>
+  <path id="wing-inner-r" d="M418 300 L500 235 L585 165 L490 120 L412 200 Z" fill="#b8283a" data-texture="ripple"/>
+  <path id="wing-top-l" d="M310 120 L190 85 L95 120 L150 225 L215 165 Z" fill="#e8a33d" data-texture="crackle"/>
+  <path id="wing-top-r" d="M585 165 L650 225 L705 120 L610 85 L490 120 Z" fill="#e8a33d" data-texture="crackle"/>
+  <path id="wing-outer-l" d="M95 120 L70 215 L105 300 L215 290 L150 225 Z" fill="#7b3fa0" data-texture="bubble"/>
+  <path id="wing-outer-r" d="M650 225 L585 290 L695 300 L730 215 L705 120 Z" fill="#7b3fa0" data-texture="bubble"/>
+  <path id="wing-core-l" d="M215 165 L150 225 L215 290 L300 235 Z" fill="#1fa8b8" data-texture="ripple"/>
+  <path id="wing-core-r" d="M500 235 L585 290 L650 225 L585 165 Z" fill="#1fa8b8" data-texture="ripple"/>
+  <path id="wing-mid-l" d="M382 300 L300 235 L215 290 L105 300 L200 335 L300 345 Z" fill="#d9531e" data-texture="crackle"/>
+  <path id="wing-mid-r" d="M500 345 L600 335 L695 300 L585 290 L500 235 L418 300 Z" fill="#d9531e" data-texture="crackle"/>
+  <path id="hind-outer-l" d="M200 335 L160 400 L160 480 L230 520 L250 410 L300 345 Z" fill="#f2d03b" data-texture="ripple"/>
+  <path id="hind-outer-r" d="M500 345 L550 410 L570 520 L640 480 L640 400 L600 335 Z" fill="#f2d03b" data-texture="ripple"/>
+  <path id="hind-inner-l" d="M250 410 L230 520 L310 490 L350 430 L388 400 L382 300 L300 345 Z" fill="#e06c9f" data-texture="bubble"/>
+  <path id="hind-inner-r" d="M500 345 L418 300 L412 400 L450 430 L490 490 L570 520 L550 410 Z" fill="#e06c9f" data-texture="bubble"/>
+  <path id="bg-corner-l" d="M0 0 L250 0 L190 85 L95 120 L0 160 Z" fill="#2c5fa8" data-texture="ripple"/>
+  <path id="bg-corner-r" d="M800 160 L705 120 L610 85 L550 0 L800 0 Z" fill="#2c5fa8" data-texture="ripple"/>
+  <path id="bg-side-l" d="M0 160 L95 120 L70 215 L105 300 L0 330 Z" fill="#2e8b57" data-texture="crackle"/>
+  <path id="bg-side-r" d="M800 330 L695 300 L730 215 L705 120 L800 160 Z" fill="#2e8b57" data-texture="crackle"/>
+  <path id="bg-low-l" d="M0 330 L105 300 L200 335 L160 400 L160 480 L0 480 Z" fill="#1b6b6b" data-texture="bubble"/>
+  <path id="bg-low-r" d="M800 480 L640 480 L640 400 L600 335 L695 300 L800 330 Z" fill="#1b6b6b" data-texture="bubble"/>
+  <path id="bg-foot-l" d="M0 480 L160 480 L230 520 L310 490 L300 600 L0 600 Z" fill="#2c5fa8" data-texture="crackle"/>
+  <path id="bg-foot-r" d="M800 600 L500 600 L490 490 L570 520 L640 480 L800 480 Z" fill="#2c5fa8" data-texture="crackle"/>
+  <path id="bg-top" d="M250 0 L190 85 L310 120 L388 200 L400 168 L412 200 L490 120 L610 85 L550 0 Z" fill="#3a3f9e" data-texture="ripple"/>
+  <path id="bg-bottom" d="M300 600 L310 490 L350 430 L388 400 L400 445 L412 400 L450 430 L490 490 L500 600 Z" fill="#3a3f9e" data-texture="bubble"/>
+</svg>
